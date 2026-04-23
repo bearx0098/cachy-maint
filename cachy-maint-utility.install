@@ -1,0 +1,4 @@
+post_install() {
+    echo -e "\n\e[1;32m[✔] Installation complete!\e[0m"
+    echo -e "You can now run the tool by typing: \e[1;34mcachy-maint\e[0m\n"
+}

@@ -1,12 +1,13 @@
 # Maintainer: bearx0098 <bearx0098@gmail.com>
 pkgname=cachy-maint-utility
 pkgver=1.0
-pkgrel=4
-pkgdesc="A professional system maintenance and update tool for CachyOS"
+pkgrel=5
+pkgdesc="A professional system maintenance and update tool for CachyOS. Simply run with cachy-maint"
 arch=('any')
 url="https://github.com"
 license=('GPL')
 depends=('bash' 'pacman' 'paru' 'topgrade' 'expect' 'perl' 'konsole')
+install='cachy-maint-utility.install'
 source=('cachy-maint' 'cachy-maint-utility.desktop')
 sha256sums=('39132ad39d35a4872b407a78644f177eb5beb3ea259392630dbfd0d57feb8dc8'
             '9a7c938d1491c5607ef5b440850869d9397b87809098060861179a6daa986997')
