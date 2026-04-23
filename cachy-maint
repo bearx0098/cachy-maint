@@ -1,21 +1,22 @@
 #!/bin/bash
 
-# Check if the script is running as root
-if [ "$EUID" -ne 0 ]; then
-  # If not root, restart the script WITH sudo
-  sudo "$0" "$@"
-  exit
-fi
+# 1. Ask for sudo password once at the start.
+# This ensures the rest of the script doesn't get stuck.
+sudo -v
 
-# ... the rest of your script (now you don't need 'sudo' in front of commands!)
+# 2. Keep the sudo timestamp alive in the background while script runs
+while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
-
-# Define folders
-LOG_DIR="$HOME/.local/share/cachy-maint/logs"
+# 3. Setup Folders
+# We use /home/bearx explicitly because $HOME can change to /root if run with sudo
+REAL_USER=$(logname)
+LOG_DIR="/home/$REAL_USER/.local/share/cachy-maint/logs"
+mkdir -p "$LOG_DIR"
 TMPLOG="/tmp/cachy-maint.log"
+sudo rm -f "$TMPLOG" # Clear any old root-owned logs
 TS=$(date +%Y-%m-%d_%H%M)
 
-# Ensure dependencies are installed
+# 4. Ensure dependencies are installed
 DEPENDENCIES=(expect perl topgrade paru)
 for cmd in "${DEPENDENCIES[@]}"; do
     if ! command -v "$cmd" &> /dev/null; then
@@ -24,7 +25,7 @@ for cmd in "${DEPENDENCIES[@]}"; do
     fi
 done
 
-# Run Maintenance
+# 5. Run Maintenance as USER (allows Topgrade to work correctly)
 (
     unbuffer sudo rm -rf /var/cache/pacman/pkg/download-* && \
     unbuffer sudo paccache -r && \
@@ -36,16 +37,18 @@ done
 EXIT_CODE=${PIPESTATUS[0]}
 sleep 1
 
-# Handle Logs
-if [ $EXIT_CODE -eq 0 ]; then
+# 6. Handle Logs
+if [ "$EXIT_CODE" -eq 0 ]; then
     rm -f "$TMPLOG"
     MSG="\e[1;32m[✔] SUCCESS: System is up to date.\e[0m"
 else
+    # Ensure the log file is owned by the user so it can be moved
+    sudo chown $REAL_USER:$REAL_USER "$TMPLOG"
     mv "$TMPLOG" "$LOG_DIR/cachy-maint_ERROR_$TS.log"
     MSG="\e[1;31m[!] ERROR: Log saved to $LOG_DIR/cachy-maint_ERROR_$TS.log\e[0m"
 fi
 
-# Summary
+# 7. Summary
 printf "\n\e[1;33m──────────────────────────────────────────────────\e[0m\n %b\n Finished at: %s\n\e[1;33m──────────────────────────────────────────────────\e[0m\n" "$MSG" "$(date)"
 
 if (( SHLVL < 2 )); then
