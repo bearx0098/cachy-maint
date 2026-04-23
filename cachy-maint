@@ -11,8 +11,8 @@ sudo rm -f "$TMPLOG"
 TS=$(date +%Y-%m-%d_%H%M)
 
 # 3. Run the Workhorse through Sudo and Log it
-# We use sudo -E to keep the user environment for Topgrade
-sudo -E bash -c "/usr/bin/cachy-maint-work" 2>&1 | perl -pe 's/\e\[?.*?[\x40-\x7e]//g; s/\e\(B//g' > "$TMPLOG"
+# We use 'script' to keep colors/bars while saving to log
+sudo -E script -q -c "/usr/bin/cachy-maint-work" /dev/null | perl -pe 's/\e\[?.*?[\x40-\x7e]//g; s/\e\(B//g' > "$TMPLOG"
 
 EXIT_CODE=${PIPESTATUS[0]}
 

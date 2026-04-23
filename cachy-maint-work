@@ -1,7 +1,7 @@
 #!/bin/bash
-# This script runs the actual commands
-unbuffer rm -rf /var/cache/pacman/pkg/download-*
-unbuffer paccache -r
-unbuffer paru -Scc --noconfirm --cleanafter
-paru -Qdtq | xargs -r unbuffer pacman -Rns --noconfirm
-DBUS_SESSION_BUS_ADDRESS=/dev/null unbuffer topgrade -y
+# /usr/bin/cachy-maint-work
+rm -rf /var/cache/pacman/pkg/download-*
+paccache -r
+paru -Scc --noconfirm --cleanafter
+paru -Qdtq | xargs -r pacman -Rns --noconfirm
+DBUS_SESSION_BUS_ADDRESS=/dev/null topgrade -y
