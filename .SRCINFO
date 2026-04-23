@@ -1,0 +1,20 @@
+pkgbase = cachy-maint-utility
+	pkgdesc = A professional system maintenance and update tool for CachyOS
+	pkgver = 1.0
+	pkgrel = 4
+	url = https://github.com
+	arch = any
+	license = GPL
+	depends = bash
+	depends = pacman
+	depends = paru
+	depends = topgrade
+	depends = expect
+	depends = perl
+	depends = konsole
+	source = cachy-maint
+	source = cachy-maint-utility.desktop
+	sha256sums = 39132ad39d35a4872b407a78644f177eb5beb3ea259392630dbfd0d57feb8dc8
+	sha256sums = 9a7c938d1491c5607ef5b440850869d9397b87809098060861179a6daa986997
+
+pkgname = cachy-maint-utility

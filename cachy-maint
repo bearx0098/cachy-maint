@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# Define folders
+LOG_DIR="$HOME/.local/share/cachy-maint/logs"
+TMPLOG="/tmp/cachy-maint.log"
+TS=$(date +%Y-%m-%d_%H%M)
+
+# Ensure dependencies are installed
+DEPENDENCIES=(expect perl topgrade paru)
+for cmd in "${DEPENDENCIES[@]}"; do
+    if ! command -v "$cmd" &> /dev/null; then
+        echo "Installing missing dependency: $cmd..."
+        sudo pacman -S --noconfirm "$cmd" || paru -S --noconfirm "$cmd"
+    fi
+done
+
+# Run Maintenance
+(
+    unbuffer sudo rm -rf /var/cache/pacman/pkg/download-* && \
+    unbuffer sudo paccache -r && \
+    unbuffer paru -Scc --noconfirm --cleanafter && \
+    paru -Qdtq | xargs -r unbuffer sudo pacman -Rns --noconfirm && \
+    DBUS_SESSION_BUS_ADDRESS=/dev/null unbuffer topgrade -y
+) 2>&1 | tee >(perl -pe 's/\e\[?.*?[\x40-\x7e]//g; s/\e\(B//g' > "$TMPLOG")
+
+EXIT_CODE=${PIPESTATUS[0]}
+sleep 1
+
+# Handle Logs
+if [ $EXIT_CODE -eq 0 ]; then
+    rm -f "$TMPLOG"
+    MSG="\e[1;32m[✔] SUCCESS: System is up to date.\e[0m"
+else
+    mv "$TMPLOG" "$LOG_DIR/cachy-maint_ERROR_$TS.log"
+    MSG="\e[1;31m[!] ERROR: Log saved to $LOG_DIR/cachy-maint_ERROR_$TS.log\e[0m"
+fi
+
+# Summary
+printf "\n\e[1;33m──────────────────────────────────────────────────\e[0m\n %b\n Finished at: %s\n\e[1;33m──────────────────────────────────────────────────\e[0m\n" "$MSG" "$(date)"
+
+if (( SHLVL < 2 )); then
+    read -p "Press ENTER to close..." dummy
+fi

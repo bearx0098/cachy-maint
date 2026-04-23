@@ -1,0 +1,18 @@
+[Desktop Entry]
+Categories=System;
+Comment[en_US]=Full Update and Cleanup
+Comment=Full Update and Cleanup
+Exec=konsole -e cachy-maint
+GenericName[en_US]=
+GenericName=
+Icon=system-software-update
+MimeType=
+Name[en_US]=System Maintenance
+Name=System Maintenance
+Path=
+StartupNotify=true
+Terminal=false
+TerminalOptions=
+Type=Application
+X-KDE-SubstituteUID=false
+X-KDE-Username=
