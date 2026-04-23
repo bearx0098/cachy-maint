@@ -1,5 +1,15 @@
 #!/bin/bash
 
+# Check if the script is running as root
+if [ "$EUID" -ne 0 ]; then
+  # If not root, restart the script WITH sudo
+  sudo "$0" "$@"
+  exit
+fi
+
+# ... the rest of your script (now you don't need 'sudo' in front of commands!)
+
+
 # Define folders
 LOG_DIR="$HOME/.local/share/cachy-maint/logs"
 TMPLOG="/tmp/cachy-maint.log"
