@@ -1,7 +1,7 @@
 pkgbase = cachy-maint-utility
 	pkgdesc = A professional system maintenance and update tool for CachyOS. Simply run with cachy-maint
 	pkgver = 1.0
-	pkgrel = 7
+	pkgrel = 8
 	url = https://github.com
 	install = cachy-maint-utility.install
 	arch = any

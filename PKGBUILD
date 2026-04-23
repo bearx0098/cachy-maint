@@ -1,7 +1,7 @@
 # Maintainer: bearx0098 <bearx0098@gmail.com>
 pkgname=cachy-maint-utility
 pkgver=1.0
-pkgrel=7
+pkgrel=8
 pkgdesc="A professional system maintenance and update tool for CachyOS. Simply run with cachy-maint"
 arch=('any')
 url="https://github.com"
