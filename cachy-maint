@@ -1,33 +1,79 @@
 #!/bin/bash
-# 1. Start Sudo safely BEFORE any logging starts
-sudo -v || exit 1
 
-# 2. Setup Log
-REAL_USER=$(logname)
-LOG_DIR="/home/$REAL_USER/.local/share/cachy-maint/logs"
+# Check if launched from the .desktop file
+DESKTOP_MODE=0
+if [[ "$1" == "--desktop" ]]; then
+    DESKTOP_MODE=1
+fi
+
+# 1. Setup Identity & Logs
+LOG_DIR="$HOME/.local/share/cachy-maint/logs"
 mkdir -p "$LOG_DIR"
 TMPLOG="/tmp/cachy-maint.log"
-sudo rm -f "$TMPLOG"
+rm -f "$TMPLOG" 2>/dev/null
 TS=$(date +%Y-%m-%d_%H%M)
 
-# 3. Run the Workhorse through Sudo and Log it
-# We use 'script' to keep colors/bars while saving to log
-sudo -E script -q -c "/usr/bin/cachy-maint-work" /dev/null | perl -pe 's/\e\[?.*?[\x40-\x7e]//g; s/\e\(B//g' > "$TMPLOG"
+# 2. Create the inner script block
+# We write the logic to a temporary file to completely avoid quote escaping issues.
+TMP_SCRIPT=$(mktemp)
+cat << 'EOF' > "$TMP_SCRIPT"
+#!/bin/bash
+set -e
 
-EXIT_CODE=${PIPESTATUS[0]}
+# Authenticate sudo ONCE for this newly spawned TTY session
+sudo -v
 
-# 4. Handle Result & Summary
+# echo "Simulating a crash..." && false
+
+echo "--- Starting Maintenance ---"
+
+# Root commands get sudo
+sudo rm -rf /var/cache/pacman/pkg/download-*
+yes | sudo paccache -rk1
+yes | sudo pacman -Sc --noconfirm
+
+# paru is run normally, it will use the sudo auth we just provided
+yes | paru -Scc --noconfirm --cleanafter
+
+# Temporarily disable error aborting for orphans check
+set +e
+ORPHANS=$(paru -Qdtq)
+set -e
+
+if [ -n "$ORPHANS" ]; then
+    echo "$ORPHANS" | xargs -r sudo pacman -Rns --noconfirm
+fi
+
+# Run Topgrade normally
+DBUS_SESSION_BUS_ADDRESS=/dev/null topgrade -y --disable tldr
+EOF
+
+chmod +x "$TMP_SCRIPT"
+
+# 3. Run the script capturing colors
+# We run this as the standard user, so the log file is owned by YOU, not root!
+script -e -q -c "$TMP_SCRIPT" "$TMPLOG"
+EXIT_CODE=$?
+
+# Clean up the temporary script
+rm -f "$TMP_SCRIPT"
+
+# 4. Clean Log
+perl -i -pe 's/\x1B\[[0-9;]*[mK]//g' "$TMPLOG"
+
+# 5. Handle Result
 if [ "$EXIT_CODE" -eq 0 ]; then
     rm -f "$TMPLOG"
     MSG="\e[1;32m[✔] SUCCESS: System is up to date.\e[0m"
 else
-    sudo chown $REAL_USER:$REAL_USER "$TMPLOG"
     mv "$TMPLOG" "$LOG_DIR/cachy-maint_ERROR_$TS.log"
-    MSG="\e[1;31m[!] ERROR: Log saved to $LOG_DIR/cachy-maint_ERROR_$TS.log\e[0m"
+    MSG="\e[1;31m[!] ERROR: Maintenance failed. Log saved to $LOG_DIR\e[0m"
 fi
 
 printf "\n\e[1;33m──────────────────────────────────────────────────\e[0m\n %b\n Finished at: %s\n\e[1;33m──────────────────────────────────────────────────\e[0m\n" "$MSG" "$(date)"
 
-if (( SHLVL < 2 )); then
-    read -p "Press ENTER to close..." dummy
+# 6. Smart Exit
+if [[ "$DESKTOP_MODE" -eq 1 ]]; then
+    echo "Press ENTER to exit..."
+    read -r dummy
 fi

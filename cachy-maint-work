@@ -1,7 +1,0 @@
-#!/bin/bash
-# /usr/bin/cachy-maint-work
-rm -rf /var/cache/pacman/pkg/download-*
-paccache -r
-paru -Scc --noconfirm --cleanafter
-paru -Qdtq | xargs -r pacman -Rns --noconfirm
-DBUS_SESSION_BUS_ADDRESS=/dev/null topgrade -y
