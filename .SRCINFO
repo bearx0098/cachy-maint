@@ -1,10 +1,10 @@
 pkgbase = cachy-maint-utility
 	pkgdesc = Professional system maintenance and update tool for CachyOS and Arch Linux.
 	pkgver = 1.0
-	pkgrel = 17
+	pkgrel = 18
 	url = https://github.com/bearx0098/cachy-maint-utility
 	arch = any
-	license = GPL
+	license = GPL-3.0-only
 	depends = bash
 	depends = pacman
 	depends = pacman-contrib
@@ -14,7 +14,7 @@ pkgbase = cachy-maint-utility
 	optdepends = konsole: Default terminal emulator for the desktop entry
 	source = cachy-maint
 	source = cachy-maint-utility.desktop
-	sha256sums = b938bc568ec677e94bcd77b4e31b319f8374a71e7f894c504d967ddcb0068d41
+	sha256sums = 0b553b8381917d16572d1617d1fcbd8ebafaeeccd62aaa86b342abbf20d94869
 	sha256sums = 431fdab07e1642caa5dd6a8652a5abf2737f2adec21a94aa2b63133147c5e5f0
 
 pkgname = cachy-maint-utility
