@@ -11,10 +11,12 @@ depends=('bash' 'pacman' 'pacman-contrib' 'paru' 'topgrade' 'perl')
 # Optional: 'optdepends' lets people use 'yay' instead if they want
 optdepends=('konsole: Default terminal emulator for the desktop entry')
 source=('cachy-maint'
-        'cachy-maint-utility.desktop')
+        'cachy-maint-utility.desktop'
+        'LICENSE')
 # Use 'SKIP' for now so you don't have to recalculate every time you edit the script
 sha256sums=('0b553b8381917d16572d1617d1fcbd8ebafaeeccd62aaa86b342abbf20d94869'
-            '431fdab07e1642caa5dd6a8652a5abf2737f2adec21a94aa2b63133147c5e5f0')
+            '431fdab07e1642caa5dd6a8652a5abf2737f2adec21a94aa2b63133147c5e5f0'
+            '3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986')
 
 package() {
     # Install the script
