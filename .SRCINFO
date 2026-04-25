@@ -13,9 +13,11 @@ pkgbase = cachy-maint-utility
 	depends = perl
 	optdepends = konsole: Default terminal emulator for the desktop entry
 	source = cachy-maint
+	source = cachy-maint-utility.install
 	source = cachy-maint-utility.desktop
 	source = LICENSE
 	sha256sums = 0b553b8381917d16572d1617d1fcbd8ebafaeeccd62aaa86b342abbf20d94869
+	sha256sums = 5829eda923799176a3f872e77262e7b3a00fdc6e7050c46e97bcc964e264f3a8
 	sha256sums = 431fdab07e1642caa5dd6a8652a5abf2737f2adec21a94aa2b63133147c5e5f0
 	sha256sums = 3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986
 
